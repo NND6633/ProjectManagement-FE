@@ -1,18 +1,21 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute'; // Import người gác cổng
-
-import Login from './pages/Login'; 
-import Signup from './pages/Signup';
-import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
+import Guest from './pages/Guest';
+import Login from './pages/Auth/Login'; 
+import Signup from './pages/Auth/Signup';
+import ForgotPassword from './pages/Auth/ForgotPassword';
+import ResetPassword from './pages/Auth/ResetPassword';
 import DashboardLayout from './layouts/DashboardLayout';
 import Dashboard from './pages/Dashboard';
 import Teams from './pages/Teams';
 import Projects from './pages/Projects';
+import ProjectDetail from './pages/ProjectDetail';
+
 function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/guest" element={<Guest />} />
         {/* ========================================== */}
         {/* 1. CÁC ĐƯỜNG DẪN CÔNG CỘNG (PUBLIC ROUTES)  */}
         {/* ========================================== */}
@@ -37,12 +40,13 @@ function App() {
           {/* Các trang khác sẽ thêm sau: */}
           {<Route path="teams" element={<Teams />} />}
           {<Route path="projects" element={<Projects />} />}
+          <Route path="/projects/:id" element={<ProjectDetail />} />
         </Route>
         
         {/* ========================================== */}
         {/* 3. XỬ LÝ LỖI 404                           */}
         {/* ========================================== */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<Navigate to="/guest" replace />} />
         
       </Routes>
     </Router>

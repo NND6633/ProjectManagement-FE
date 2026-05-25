@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import IconInput from '../components/ForgetPassword/IconInput';
-import AuthButton from '../components/ForgetPassword/AuthButton';
-import AuthHeader from '../components/Signup/AuthHeader';
-import { resetPasswordApi } from '../services/authService'; // Import hàm gọi API
+import IconInput from '../../components/ForgetPassword/IconInput';
+import AuthButton from '../../components/ForgetPassword/AuthButton';
+import AuthHeader from '../../components/Signup/AuthHeader';
+import { resetPasswordApi } from '../../services/authService'; // Import hàm gọi API
 
 const ResetPassword = () => {
   const navigate = useNavigate();

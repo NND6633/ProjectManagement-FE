@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import { loginApi } from '../services/authService';
-import Input from '../components/Login/Input';
-import Button from '../components/Login/Button';
+import { loginApi } from '../../services/authService';
+import Input from '../../components/Login/Input';
+import Button from '../../components/Login/Button';
 
 const Login = () => {
   const [email, setEmail] = useState('');

@@ -1,7 +1,9 @@
-import  { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { getAllProjectsApi } from '../services/projectService'; // Import service gọi API
+import { useNavigate } from 'react-router-dom';
 
 const Projects = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('All');
   
   // Các state để quản lý dữ liệu từ API
@@ -95,7 +97,7 @@ const Projects = () => {
         ))}
       </div>
 
-      {/* --- HIỂN THỊ TRẠNG THÁI (LOADING / ERROR) HOẶC BẢNG DỮ LIỆU --- */}
+      {/* --- PHẦN NỘI DUNG (TABLE) --- */}
       <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden min-h-[300px]">
         {isLoading ? (
           // Khung Loading
@@ -137,7 +139,9 @@ const Projects = () => {
                     const style = getProjectStyle(index);
 
                     return (
-                      <tr key={project.id} className="hover:bg-slate-50/50 transition-colors">
+                      <tr key={project.id} 
+                      onClick={() => navigate(`/projects/${project.id}`)}
+                      className="hover:bg-slate-50/50 transition-colors cursor-pointer">
                         <td className="py-4 px-6">
                           <div className="flex items-center gap-4">
                             <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${style.bg} ${style.text}`}>

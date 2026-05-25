@@ -133,3 +133,29 @@ export const getProjectStatsApi = async (projectId) => {
     }, 800);
   });
 };
+// ==========================================
+// HÀM LẤY DANH SÁCH TASK CỦA DỰ ÁN
+// ==========================================
+export const getProjectTasksApi = async (projectId) => {
+  // --- CODE THẬT KHI NỐI BACKEND ---
+  /*
+  try {
+    const response = await api.get(`/api/v1/projects/${projectId}/tasks`);
+    return response.data.data; // Trả về mảng các tasks từ C#
+  } catch (error) {
+    throw new Error("Lỗi khi tải danh sách công việc", { cause: error });
+  }
+  */
+
+  // --- CODE MOCK ĐỂ BẠN TEST TẠM ---
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      console.log("Mock API - Lấy tasks cho Project ID:", projectId);
+      resolve([
+        { id: 'T-102', title: 'Create Wireframes', status: 'Pending', tag: 'DESIGN', progress: 0 },
+        { id: 'T-103', title: 'Setup DB', status: 'In Progress', tag: 'DEVELOPMENT', progress: 50 },
+        { id: 'T-104', title: 'User Interviews', status: 'Completed', tag: 'RESEARCH', progress: 100 }
+      ]);
+    }, 800);
+  });
+};

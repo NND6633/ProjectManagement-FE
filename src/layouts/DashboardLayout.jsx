@@ -1,16 +1,52 @@
+import { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
+import CreateProjectModal from '../pages/CreateProjectModal'; 
+
+// Import hàm từ service thay vì gọi API trực tiếp
+import { getUserProfile } from '../services/dashboardService'; 
 
 const DashboardLayout = () => {
-  // 1. Lấy thông tin đường dẫn (URL) hiện tại
   const location = useLocation();
-
-  // 2. Hàm hỗ trợ để kiểm tra xem menu nào đang được chọn
-  const checkIsActive = (path) => {
-    if (path === '/') {
-      // Dành riêng cho trang chủ (Dashboard)
-      return location.pathname === '/';
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // Khởi tạo state từ localStorage để giao diện không bị giật (Lazy Initialization)
+  const [userInfo, setUserInfo] = useState(() => {
+    const defaultInfo = { name: 'User', avatar: 'https://i.pravatar.cc/150?img=11' };
+    try {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        const parsed = JSON.parse(storedUser);
+        if (parsed.email) defaultInfo.name = parsed.email.split('@')[0];
+      }
+    } catch (e) {
+      console.error("Lỗi đọc localStorage:", e);
     }
-    // Dành cho các trang khác (Teams, Projects...)
+    return defaultInfo;
+  });
+
+  // Sử dụng Service để lấy dữ liệu User chính xác từ Backend
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const data = await getUserProfile(); 
+        
+        setUserInfo({
+          name: data.fullName || data.name || data.email?.split('@')[0] || 'User',
+          avatar: data.avatar || 'https://i.pravatar.cc/150?img=11'
+        });
+      } catch (error) {
+        console.error("Lỗi tải profile header:", error);
+      }
+    };
+    fetchProfile();
+  }, []);
+
+  const handleProjectCreated = () => {
+    console.log("Dự án đã được tạo thành công!");
+  };
+
+  const checkIsActive = (path) => {
+    if (path === '/') return location.pathname === '/';
     return location.pathname.includes(path);
   };
 
@@ -19,7 +55,6 @@ const DashboardLayout = () => {
       
       {/* ================= SIDEBAR ================= */}
       <aside className="w-64 bg-white border-r border-slate-200 flex flex-col">
-        {/* Logo */}
         <div className="h-16 flex items-center px-6 border-b border-transparent">
           <div className="text-[#5b61f4] font-bold text-xl flex items-center gap-2">
             <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
@@ -29,9 +64,11 @@ const DashboardLayout = () => {
           </div>
         </div>
 
-        {/* Nút New Project */}
         <div className="px-4 mt-6 mb-4">
-          <button className="w-full bg-[#5b61f4] hover:bg-indigo-600 text-white rounded-lg py-2.5 flex items-center justify-center gap-2 font-medium transition-colors">
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="w-full bg-[#5b61f4] hover:bg-indigo-600 text-white rounded-lg py-2.5 flex items-center justify-center gap-2 font-medium transition-colors"
+          >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
             </svg>
@@ -39,72 +76,20 @@ const DashboardLayout = () => {
           </button>
         </div>
 
-        {/* Menu Navigation */}
         <nav className="flex-1 px-3 space-y-1 mt-4">
-          
-          {/* Menu Dashboard */}
-          <Link 
-            to="/" 
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${
-              checkIsActive('/') 
-                ? 'bg-indigo-50 text-[#5b61f4]' 
-                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-            }`}
-          >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-            </svg>
+          <Link to="/" className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${checkIsActive('/') ? 'bg-indigo-50 text-[#5b61f4]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}>
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
             Dashboard
           </Link>
-
-          {/* Menu Teams */}
-          <Link 
-            to="/teams" 
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${
-              checkIsActive('/teams') 
-                ? 'bg-indigo-50 text-[#5b61f4]' 
-                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-            }`}
-          >
+          <Link to="/teams" className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${checkIsActive('/teams') ? 'bg-indigo-50 text-[#5b61f4]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}>
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
             Teams
           </Link>
-
-          {/* Menu Projects */}
-          <Link 
-            to="/projects" 
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${
-              checkIsActive('/projects') 
-                ? 'bg-indigo-50 text-[#5b61f4]' 
-                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-            }`}
-          >
+          <Link to="/projects" className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${checkIsActive('/projects') ? 'bg-indigo-50 text-[#5b61f4]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}>
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /></svg>
             Projects
           </Link>
-
-          {/* Menu AI Analytics */}
-          <Link 
-            to="/analytics" 
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${
-              checkIsActive('/analytics') 
-                ? 'bg-indigo-50 text-[#5b61f4]' 
-                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-            }`}
-          >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" /></svg>
-            AI Analytics
-          </Link>
-
         </nav>
-
-        {/* Footer Sidebar */}
-        <div className="p-4 border-t border-slate-200 space-y-1">
-          <button className="flex items-center gap-3 px-3 py-2.5 w-full text-left text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg font-medium">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-            Settings
-          </button>
-        </div>
       </aside>
 
       {/* ================= MAIN CONTENT AREA ================= */}
@@ -131,19 +116,24 @@ const DashboardLayout = () => {
               <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
             </button>
             <div className="flex items-center gap-3 cursor-pointer">
-              <img src="https://i.pravatar.cc/150?img=11" alt="User avatar" className="w-8 h-8 rounded-full" />
-              <span className="font-medium text-sm">Leader John</span>
+              <img src={userInfo.avatar} alt="User avatar" className="w-8 h-8 rounded-full border border-slate-200 object-cover" />
+              <span className="font-medium text-sm">{userInfo.name}</span>
               <svg className="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
             </div>
           </div>
         </header>
 
-        {/* Nội dung trang thay đổi ở đây */}
+        {/* Nội dung trang hiện tại sẽ được render ở Outlet */}
         <main className="flex-1 overflow-y-auto p-8 bg-[#fcfcfd]">
           <Outlet /> 
         </main>
-
       </div>
+
+      <CreateProjectModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        onSuccess={handleProjectCreated}
+      />
     </div>
   );
 };

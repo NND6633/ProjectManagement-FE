@@ -23,8 +23,24 @@ export const getAllTeamsApi = async () => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve([
-        { id: "team-1", name: "Alpha Team", leaderId: "user-1", memberCount: 5 },
-        { id: "team-2", name: "Beta Team", leaderId: "user-2", memberCount: 8 }
+        { 
+          id: "team-1", 
+          name: "Product Design", 
+          type: "design", // Thêm type để UI render đúng màu/icon
+          leaderName: "Sarah Jenkins", 
+          leaderAvatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+          memberCount: 12,
+          activeProjects: 4
+        },
+        { 
+          id: "team-2", 
+          name: "Core Engineering", 
+          type: "engineering",
+          leaderName: "Michael Chen", 
+          leaderAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
+          memberCount: 24,
+          activeProjects: 8
+        }
       ]);
     }, 800);
   });

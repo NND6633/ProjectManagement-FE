@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import IconInput from '../components/ForgetPassword/IconInput';
-import AuthButton from '../components/ForgetPassword/AuthButton';
+import IconInput from '../../components/ForgetPassword/IconInput';
+import AuthButton from '../../components/ForgetPassword/AuthButton';
 
 // Thay vì import api và emailjs, chúng ta import service đã viết sẵn
-import { forgotPasswordApi } from '../services/authService'; 
+import { forgotPasswordApi } from '../../services/authService'; 
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
